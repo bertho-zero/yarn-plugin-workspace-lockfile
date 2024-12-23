@@ -72,6 +72,11 @@ const green = (text: string) => `\x1b[32m${text}\x1b[0m`;
 
 const plugin: Plugin<Hooks> = {
   configuration: {
+    enableWorkspaceLockfiles: {
+      description: 'Define whether workspaces should have their own lockfile.',
+      type: SettingsType.BOOLEAN,
+      default: true
+    },
     workspaceLockfiles: {
       description: 'List of the workspaces that need a specific lockfile',
       type: SettingsType.STRING,
@@ -86,6 +91,12 @@ const plugin: Plugin<Hooks> = {
   } as {[settingName: string]: SettingsDefinition},
   hooks: {
     afterAllInstalled: async (project: Project, options: InstallOptions) => {
+      const enableWorkspaceLockfiles = project.configuration.values.get('enableWorkspaceLockfiles');
+
+      if (!enableWorkspaceLockfiles) {
+        return;
+      }
+
       const workspaceLockfiles = project.configuration.values.get('workspaceLockfiles');
       const workspaceLockfileFilename = project.configuration.values.get('workspaceLockfileFilename');
 
