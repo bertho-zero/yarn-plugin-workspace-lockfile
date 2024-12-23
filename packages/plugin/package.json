@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "main": "./sources/index.ts",
   "dependencies": {
-    "@types/node": "^20.8.8",
+    "@types/node": "^20.9.2",
     "@yarnpkg/builder": "^4.0.0",
-    "@yarnpkg/cli": "^4.0.0",
-    "@yarnpkg/core": "^4.0.0",
-    "@yarnpkg/fslib": "^3.0.0",
+    "@yarnpkg/cli": "^4.0.2",
+    "@yarnpkg/core": "^4.0.2",
+    "@yarnpkg/fslib": "^3.0.1",
+    "@yarnpkg/parsers": "^3.0.0",
     "typescript": "^5.2.2"
   },
   "scripts": {

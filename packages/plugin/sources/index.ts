@@ -11,9 +11,11 @@ import {
   structUtils,
   Manifest,
   InstallOptions,
+  MessageName,
 } from '@yarnpkg/core';
 import { getPluginConfiguration } from "@yarnpkg/cli";
 import { xfs, ppath, Filename } from "@yarnpkg/fslib";
+import autofixMergeConflicts from './autofixMergeConflicts';
 
 const createLockfile = async (
   rootProject: Project,
@@ -96,7 +98,23 @@ const plugin: Plugin<Hooks> = {
         const lockPath = ppath.join(workspace.cwd, Filename.lockfile);
 
         // Yarn v4 need a `yarn.lock`
-        await xfs.renamePromise(workspaceLockPath, lockPath);
+        if (await xfs.existsPromise(workspaceLockPath)) {
+          const automerged = await autofixMergeConflicts(
+            {
+              projectCwd: workspace.cwd,
+              normalizeDependency: project.configuration.normalizeDependency,
+            } as Configuration,
+            workspaceLockfileFilename,
+            options.immutable,
+          );
+
+          if (automerged) {
+            options.report.reportInfo(MessageName.AUTOMERGE_SUCCESS, `Automatically fixed merge conflicts 👍`);
+            options.report.reportSeparator();
+          }
+
+          await xfs.renamePromise(workspaceLockPath, lockPath);
+        }
 
         await xfs.writeFilePromise(
           lockPath,
